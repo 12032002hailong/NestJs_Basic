@@ -12,18 +12,18 @@ export class AppController {
     private readonly appService: AppService,
     private configService: ConfigService,
     private authService: AuthService
-  ) {}
+  ) { }
 
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   @Post('/login')
-  handleLogin(@Request() req){
+  handleLogin(@Request() req) {
     return this.authService.login(req.user)
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
   }
-  
+
 }
