@@ -7,7 +7,6 @@ import { LocalAuthGuard } from './local-auth.guard';
 @Controller("auth") // route /
 export class AuthController {
     constructor(
-
         private authService: AuthService
     ) { }
 
@@ -19,6 +18,7 @@ export class AuthController {
     }
 
     // @UseGuards(JwtAuthGuard)
+    @Public()
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;
