@@ -1,23 +1,64 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsObject, ValidateNested } from 'class-validator';
 
 //data transfer object
+
+class Company {
+  @IsNotEmpty()
+  _id: string;
+
+  @IsNotEmpty()
+  name: string
+}
+
+
 export class CreateUserDto {
-  @IsEmail(
-    {},
-    {
-      message: 'Email không được để trống',
-    },
-  )
-  @IsNotEmpty({
-    message: 'Email không được để trống',
-  })
+  @IsNotEmpty({ message: 'Name không được để trống', })
+  name: string;
+
+  @IsEmail({}, { message: 'Email không được để trống', },)
+  @IsNotEmpty({ message: 'Email không được để trống', })
   email: string;
 
-  @IsNotEmpty({
-    message: 'Pasword không được để trống',
-  })
+  @IsNotEmpty({ message: 'Pasword không được để trống', })
   password: string;
 
+  @IsNotEmpty({ message: 'Age không được để trống', })
+  age: number;
+
+  @IsNotEmpty({ message: 'Gender không được để trống', })
+  gender: string;
+
+  @IsNotEmpty({ message: 'Address không được để trống', })
+  address: string;
+
+  @IsNotEmpty({ message: 'Role không được để trống', })
+  role: string;
+
+  @IsNotEmpty()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => Company)
+  company: Company;
+}
+
+export class RegisterUserDto {
+  @IsNotEmpty({ message: 'Name không được để trống', })
   name: string;
+
+  @IsEmail({}, { message: 'Email không được để trống', },)
+  @IsNotEmpty({ message: 'Email không được để trống', })
+  email: string;
+
+  @IsNotEmpty({ message: 'Pasword không được để trống', })
+  password: string;
+
+  @IsNotEmpty({ message: 'Age không được để trống', })
+  age: number;
+
+  @IsNotEmpty({ message: 'Gender không được để trống', })
+  gender: string;
+
+  @IsNotEmpty({ message: 'Address không được để trống', })
   address: string;
 }
