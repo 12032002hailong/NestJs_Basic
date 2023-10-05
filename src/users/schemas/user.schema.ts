@@ -37,7 +37,7 @@ export class User {
   refreshToken: string;
 
   @Prop({ type: Object })
-  createBy: {
+  createdBy: {
     _id: mongoose.Schema.Types.ObjectId;
     email: string;
   };
@@ -54,7 +54,9 @@ export class User {
     email: string;
   };
 
-  @Prop()
+  @Prop({
+    //add id vs doc docs
+  })
   createdAt: Date;
 
   @Prop()
