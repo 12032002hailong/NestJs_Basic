@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/users/user.interface';
@@ -76,10 +76,61 @@ export class AuthService {
 
   createRefreshToken = (payload: any) => {
     const refresh_token = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>("JWT_ACCESS_TOKEN_SECRET"),
+      secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
       expiresIn: ms(this.configService.get<string>("JWT_REFRESH_EXPIRE")) / 1000
     });
     return refresh_token;
+  }
+
+  processNewToken = async (refreshToken: string, response: Response) => {
+    try {
+      this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET")
+      })
+      //todo
+
+      let user = await this.usersService.findUserByToken(refreshToken)
+
+      if (user) {
+        const { _id, name, email, role } = user;
+        const payload = {
+          sub: "token fresh",
+          iss: "from server",
+          _id,
+          name,
+          email,
+          role
+        };
+
+        const refresh_token = this.createRefreshToken(payload)
+
+        //update user with refresh token
+        await this.usersService.updateUserToken(refresh_token, _id.toString());
+
+        //set refresh_token as cookies
+        response.clearCookie("refresh_token")
+
+        response.cookie('refresh_token', refresh_token, {
+          httpOnly: true,
+          maxAge: ms(this.configService.get<string>("JWT_REFRESH_EXPIRE"))
+        });
+
+
+        return {
+          access_token: this.jwtService.sign(payload),
+          refresh_token,
+          user: {
+            _id,
+            name,
+            email,
+            role
+          }
+
+        }
+      }
+    } catch (error) {
+      throw new BadRequestException("Refresh Token không hợp lệ. Vui lòng login.")
+    }
   }
 
 }
