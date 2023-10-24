@@ -6,7 +6,7 @@ import mongoose, { Model } from 'mongoose';
 import { genSaltSync, hashSync, compareSync, hash } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './user.interface';
-import { ResponseMessage, User } from 'src/decorator/customize';
+import { User } from 'src/decorator/customize';
 import { UserDocument, User as UserM } from './schemas/user.schema';
 import aqp from 'api-query-params';
 

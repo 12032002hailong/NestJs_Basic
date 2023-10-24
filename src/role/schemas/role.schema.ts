@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Company } from 'src/companies/schemas/company.schema';
-import { Job } from 'src/jobs/schemas/job.schema';
+
 import { Permission } from 'src/permission/schemas/permission.schemas';
 
 export type RoleDocument = HydratedDocument<Role>;
