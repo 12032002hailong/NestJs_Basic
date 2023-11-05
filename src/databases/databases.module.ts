@@ -3,10 +3,9 @@ import { DatabasesService } from './databases.service';
 import { DatabasesController } from './databases.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/users/schemas/user.schema';
-
+import { Permission, PermissionSchema } from 'src/permissions/schemas/permission.schema';
+import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
 import { UsersService } from 'src/users/users.service';
-import { Permission, PermissionSchema } from 'src/permission/schemas/permission.schemas';
-import { Role, RoleSchema } from 'src/role/schemas/role.schema';
 
 @Module({
   controllers: [DatabasesController],
@@ -17,7 +16,6 @@ import { Role, RoleSchema } from 'src/role/schemas/role.schema';
       { name: Permission.name, schema: PermissionSchema },
       { name: Role.name, schema: RoleSchema },
     ])
-  ],
-
+  ]
 })
 export class DatabasesModule { }

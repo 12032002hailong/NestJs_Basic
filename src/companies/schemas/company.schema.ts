@@ -18,7 +18,7 @@ export class Company {
     logo: string;
 
     @Prop({ type: Object })
-    createBy: {
+    createdBy: {
         _id: mongoose.Schema.Types.ObjectId;
         email: string;
     };

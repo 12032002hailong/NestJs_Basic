@@ -19,7 +19,7 @@ export class CompaniesService {
   create(createCompanyDto: CreateCompanyDto, user: IUser) {
     return this.companyModel.create({
       ...createCompanyDto,
-      createBy: {
+      createdBy: {
         _id: user._id,
         email: user.email
       }
@@ -67,7 +67,7 @@ export class CompaniesService {
       { _id: id },
       {
         ...updateCompanyDto,
-        updateBy: {
+        updatedBy: {
           _id: user._id,
           email: user.email
         }

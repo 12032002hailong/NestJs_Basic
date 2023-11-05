@@ -1,12 +1,11 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 
 
 export type PermissionDocument = HydratedDocument<Permission>;
 
 @Schema({ timestamps: true })
 export class Permission {
-
     @Prop()
     name: string;
 
@@ -18,7 +17,6 @@ export class Permission {
 
     @Prop()
     module: string;
-
 
     @Prop({ type: Object })
     createdBy: {

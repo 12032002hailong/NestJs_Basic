@@ -2,15 +2,16 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { Permission, PermissionDocument } from 'src/permissions/schemas/permission.schema';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
-import { Permission, PermissionDocument } from 'src/permission/schemas/permission.schemas';
-import { Role, RoleDocument } from 'src/role/schemas/role.schema';
 import { ADMIN_ROLE, INIT_PERMISSIONS, USER_ROLE } from './sample';
 
 @Injectable()
 export class DatabasesService implements OnModuleInit {
     private readonly logger = new Logger(DatabasesService.name);
+
 
     constructor(
         @InjectModel(User.name)
@@ -24,19 +25,16 @@ export class DatabasesService implements OnModuleInit {
 
         private configService: ConfigService,
         private userService: UsersService
-
     ) { }
 
-
     async onModuleInit() {
+
         const isInit = this.configService.get<string>("SHOULD_INIT");
         if (Boolean(isInit)) {
 
             const countUser = await this.userModel.count({});
             const countPermission = await this.permissionModel.count({});
             const countRole = await this.roleModel.count({});
-
-            console.log("countUser", countUser, "countPermission", countPermission, 'countRole', countRole)
 
             //create permissions
             if (countPermission === 0) {
@@ -77,8 +75,8 @@ export class DatabasesService implements OnModuleInit {
                         role: adminRole?._id
                     },
                     {
-                        name: "I'm Hỏi Dân IT",
-                        email: "hoidanit@gmail.com",
+                        name: "I'm Hải Long",
+                        email: "hailong@gmail.com",
                         password: this.userService.getHashPassword(this.configService.get<string>("INIT_PASSWORD")),
                         age: 96,
                         gender: "MALE",
@@ -96,9 +94,6 @@ export class DatabasesService implements OnModuleInit {
                     },
                 ])
             }
-
-            console.log("countUser", countUser, "countPermission", countPermission, 'countRole', countRole)
-
 
             if (countUser > 0 && countRole > 0 && countPermission > 0) {
                 this.logger.log('>>> ALREADY INIT SAMPLE DATA...');

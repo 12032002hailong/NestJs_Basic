@@ -23,7 +23,11 @@ export class AuthService {
     if (user) {
       const isValid = this.usersService.isValidPassword(pass, user.password)
       if (isValid === true) {
-        return user;
+        const objUser = {
+          ...user.toObject(),
+        }
+
+        return objUser;
       }
     }
     return null;
@@ -55,7 +59,7 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(payload),
-      refresh_token,
+      // refresh_token,
       user: {
         _id,
         name,
@@ -92,20 +96,21 @@ export class AuthService {
       let user = await this.usersService.findUserByToken(refreshToken)
 
       if (user) {
-        const { _id, name, email, role } = user;
+        const { _id, name, email } = user;
         const payload = {
           sub: "token fresh",
           iss: "from server",
           _id,
           name,
           email,
-          role
         };
 
         const refresh_token = this.createRefreshToken(payload)
 
         //update user with refresh token
         await this.usersService.updateUserToken(refresh_token, _id.toString());
+
+
 
         //set refresh_token as cookies
         response.clearCookie("refresh_token")
@@ -123,7 +128,6 @@ export class AuthService {
             _id,
             name,
             email,
-            role
           }
 
         }

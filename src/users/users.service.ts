@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Query } from '@nestjs/common';
 import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import mongoose from 'mongoose';
 import { genSaltSync, hashSync, compareSync, hash } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './user.interface';
@@ -15,26 +15,28 @@ import aqp from 'api-query-params';
 export class UsersService {
   constructor(
     @InjectModel(UserM.name)
-    private userModel: SoftDeleteModel<UserDocument>
+    private userModel: SoftDeleteModel<UserDocument>,
+
+
   ) { }
 
   getHashPassword = (password: string) => {
     const salt = genSaltSync(10);
     const hash = hashSync(password, salt);
-
     return hash;
   };
 
   async create(createUserDto: CreateUserDto, @User() user: IUser) {
 
     const { name, email, password, age,
-      gender, address, role, company
+      gender, address, company
     } = createUserDto;
 
     const isExist = await this.userModel.findOne({ email })
     if (isExist) {
       throw new BadRequestException(`Email: ${email} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác`)
     }
+
     // async create(email: string, password: string, name: string) {
     const hashPassword = this.getHashPassword(password);
     let newUser = await this.userModel.create({
@@ -42,7 +44,7 @@ export class UsersService {
       password: hashPassword,
       age,
       gender, address,
-      role, company,
+      company,
       createdBy: {
         _id: user._id,
         email: user.email
@@ -98,7 +100,10 @@ export class UsersService {
     return this.userModel.findOne({
       email: username
     })
-      .populate({ path: 'role', select: { name: 1, permission: 1 } })
+      .populate({
+        path: 'role',
+        select: { name: 1, permissions: 1 }
+      })
       ;
   }
 
@@ -152,13 +157,16 @@ export class UsersService {
     if (isExist) {
       throw new BadRequestException(`Email: ${email} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác`)
     }
+
+
+
+
     const hashPassword = this.getHashPassword(password);
     let newRegister = await this.userModel.create({
       name, email,
       password: hashPassword,
       age, gender,
       address,
-      role: "USER",
     })
     return newRegister;
   }
@@ -172,6 +180,10 @@ export class UsersService {
 
   findUserByToken = async (refreshToken: string) => {
     return await this.userModel.findOne({ refreshToken })
+      .populate({
+        path: 'role',
+        select: { name: 1 }
+      })
   }
 
 }

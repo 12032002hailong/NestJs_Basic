@@ -1,16 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
-import { IUser } from 'src/users/user.interface';
-import mongoose from 'mongoose';
-import aqp from 'api-query-params';
-import { Permission, PermissionDocument } from './schemas/permission.schemas';
 import { CreatePermissionDto } from './dto/create-permission.dto';
+import { IUser } from 'src/users/user.interface';
+import { InjectModel } from '@nestjs/mongoose';
+import { Permission, PermissionDocument } from './schemas/permission.schema';
+import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 @Injectable()
-export class PermissionService {
-
+export class PermissionsService {
   constructor(
     @InjectModel(Permission.name)
     private permissionModel: SoftDeleteModel<PermissionDocument>
@@ -21,8 +20,9 @@ export class PermissionService {
 
     const isExist = await this.permissionModel.findOne({ apiPath, method });
     if (isExist) {
-      throw new BadRequestException(`Permission with apiPath=${apiPath}, method=${method} đã tồn tại!`)
+      throw new BadRequestException(`Permission with apiPath = ${apiPath}, method = ${method} da ton`)
     }
+
     const newPermission = await this.permissionModel.create({
       name, apiPath, method, module,
       createdBy: {
@@ -31,13 +31,13 @@ export class PermissionService {
       }
     })
     return {
-      _id: newPermission?._id,
-      createAt: newPermission.createdAt
+      _id: newPermission?.id,
+      email: newPermission?.createdAt
     }
+
   }
 
   async findAll(currentPage: number, limit: number, qs: string) {
-
     const { filter, sort, population, projection } = aqp(qs);
     delete filter.current;
     delete filter.pageSize;
@@ -54,7 +54,7 @@ export class PermissionService {
       .sort(sort as any)
       .populate(population)
       .select(projection as any)
-      .exec();
+      .exec()
 
     return {
       meta: {
@@ -69,24 +69,17 @@ export class PermissionService {
 
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("not found permission")
+      throw new BadRequestException('not found permission')
     }
     return await this.permissionModel.findById(id);
-  }
 
-  async findByUsers(user: IUser) {
-    return await this.permissionModel.find({
-      userId: user._id
-    })
   }
 
   async update(_id: string, updatePermissionDto: UpdatePermissionDto, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
       throw new BadRequestException('not found permission')
     }
-
     const { module, method, apiPath, name } = updatePermissionDto;
-
     const updated = await this.permissionModel.updateOne(
       { _id },
       {

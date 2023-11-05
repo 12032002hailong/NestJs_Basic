@@ -9,7 +9,7 @@ import { IUser } from 'src/users/user.interface';
 @Controller("auth") // route /
 export class AuthController {
     constructor(
-        private authService: AuthService
+        private authService: AuthService,
     ) { }
 
     @Public()
@@ -31,7 +31,8 @@ export class AuthController {
 
     @ResponseMessage("Get user information")
     @Get('/account')
-    handleGetAccount(@User() user: IUser) { //req.user
+    async handleGetAccount(@User() user: IUser) { //req.user
+
         return { user }
     }
 

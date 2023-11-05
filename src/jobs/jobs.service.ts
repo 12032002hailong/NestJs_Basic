@@ -27,7 +27,7 @@ export class JobsService {
       name, skills, company, salary, quantity,
       level, description, startDate, endDate,
       isActive, location,
-      createBy: {
+      createdBy: {
         _id: user._id,
         email: user.email
       }
