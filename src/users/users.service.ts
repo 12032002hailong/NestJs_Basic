@@ -9,6 +9,8 @@ import { IUser } from './user.interface';
 import { User } from 'src/decorator/customize';
 import { UserDocument, User as UserM } from './schemas/user.schema';
 import aqp from 'api-query-params';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
+import { USER_ROLE } from 'src/databases/sample';
 
 
 @Injectable()
@@ -17,6 +19,8 @@ export class UsersService {
     @InjectModel(UserM.name)
     private userModel: SoftDeleteModel<UserDocument>,
 
+    @InjectModel(Role.name)
+    private roleModel: SoftDeleteModel<RoleDocument>
 
   ) { }
 
@@ -96,15 +100,12 @@ export class UsersService {
   }
 
   findOneByUsername(username: string) {
-
     return this.userModel.findOne({
       email: username
-    })
-      .populate({
-        path: 'role',
-        select: { name: 1, permissions: 1 }
-      })
-      ;
+    }).populate({
+      path: 'role',
+      select: { name: 1 }
+    });
   }
 
   isValidPassword(password: string, hash: string) {
@@ -158,8 +159,8 @@ export class UsersService {
       throw new BadRequestException(`Email: ${email} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác`)
     }
 
-
-
+    // fetch user role
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE })
 
     const hashPassword = this.getHashPassword(password);
     let newRegister = await this.userModel.create({
@@ -167,6 +168,7 @@ export class UsersService {
       password: hashPassword,
       age, gender,
       address,
+      role: userRole?._id
     })
     return newRegister;
   }
